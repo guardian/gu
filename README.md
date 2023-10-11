@@ -29,22 +29,26 @@ gu <task> [args...] [<task> [args...]...]
 
 ## Tasks
 
-Tasks are Node or bash scripts that live in a `./.gu` directory.
+Tasks can be any executable files, Node or bash scripts that live in the `./scripts` directory.
 
 #### Example
 
 ```
 .gu/
 ├── build.sh
-└── validate.js
+├── lint
+└── test.js
 ```
 
 Now you can run:
 
 ```sh
 gu build
-gu validate
-gu validate build
+gu lint
+gu test
+
+# or run multiple tasks
+gu lint test build
 ```
 
 etc.
@@ -55,12 +59,12 @@ Flags can be passed to tasks. They are passed to the directly preceding task.
 
 #### Example
 
-```sh
-gu validate -q -s build -w
+```
+gu lint -q -s test -w
 ```
 
-1. `validate.js` would receive `-q` and `-s` flags
-2. `build.sh` would receive a `-w` flag
+1. `lint` would receive `-q` and `-s` flags
+2. `test.js` would receive a `-w` flag
 
 ## Why is it written in bash?
 
