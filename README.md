@@ -3,13 +3,13 @@
 PoC of a Guardian task runner, in the style of our [ergonomic but unorthodox uses of `make`](https://github.com/guardian/dotcom-rendering/blob/dc76d6b6676222d23ade13ede7282bd506470679/dotcom-rendering/makefile).
 
 The idea is to standardise how and where we define common project tasks, and to
-make:
+make tasks:
 
 1. flexible to write
 2. easy to discover
 3. simple to run
 
-It's inspired by a lot prior art, especially GitHub's [Scripts To Rule Them All](https://github.com/github/scripts-to-rule-them-all).
+It's inspired by a lot of prior art, especially GitHub's [Scripts To Rule Them All](https://github.com/github/scripts-to-rule-them-all).
 
 ## Usage
 
