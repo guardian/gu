@@ -3,7 +3,6 @@
 # Determine if the terminal supports colors.
 CAN_USE_COLOR=$(tput setaf 1 &> /dev/null && echo "1" || echo "0")
 
-# Function to echo with color or without depending on terminal capability.
 echo_with_colour() {
 	if [[ $CAN_USE_COLOR -eq 1 ]]; then
 		echo -e "$1$2\033[0m"
@@ -12,7 +11,6 @@ echo_with_colour() {
 	fi
 }
 
-# Logging functions with predefined colors.
 log() {
 	echo_with_colour "\033[2m" "$1"
 }
@@ -21,7 +19,6 @@ error() {
 	echo_with_colour "\033[31m" "$1"
 }
 
-# The location of the tasks.
 GU_DIR="$(pwd)/.gu"
 
 # If the .gu directory does not exist, exit with an error.
@@ -30,7 +27,7 @@ if [[ ! -d "$GU_DIR" ]]; then
 	exit 1
 fi
 
-# Lists the available tasks in the .gu directory.
+# Function that lists the available tasks in the .gu directory.
 list_tasks() {
 	log "Available tasks:"
 	find "$GU_DIR" -type f \( -name "*.sh" -o -name "*.js" \) | sort | while read -r filepath; do
@@ -53,7 +50,7 @@ flags_list=()
 current_task=""
 current_flags=()
 
-# Parsing the command line arguments.
+# Parse the command line arguments.
 for arg in "$@"; do
 	if [[ "$arg" == -* ]]; then
 		# If the argument starts with '-', it's a flag. Append it to current_flags.
