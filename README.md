@@ -29,7 +29,7 @@ gu <task> [args...] [<task> [args...]...]
 
 ## Tasks
 
-Tasks are JavaScript or bash scripts that live in `./gu`.
+Tasks are JavaScript or bash scripts that live in a `./.gu` directory.
 
 #### Example
 
