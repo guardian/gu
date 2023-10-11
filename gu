@@ -1,0 +1,105 @@
+#!/bin/bash
+
+# Determine if the terminal supports colors.
+CAN_USE_COLOR=$(tput setaf 1 &> /dev/null && echo "1" || echo "0")
+
+# Function to echo with color or without depending on terminal capability.
+echo_with_colour() {
+	if [[ $CAN_USE_COLOR -eq 1 ]]; then
+		echo -e "$1$2\033[0m"
+	else
+		echo $2
+	fi
+}
+
+# Logging functions with predefined colors.
+log() {
+	echo_with_colour "\033[2m" "$1"
+}
+
+error() {
+	echo_with_colour "\033[31m" "$1"
+}
+
+# The location of the tasks.
+GU_DIR="$(pwd)/.gu"
+
+# If the .gu directory does not exist, exit with an error.
+if [[ ! -d "$GU_DIR" ]]; then
+	error "Tasks must live in ./.gu, but it does not exist."
+	exit 1
+fi
+
+# Lists the available tasks in the .gu directory.
+list_tasks() {
+	log "Available tasks:"
+	find "$GU_DIR" -type f \( -name "*.sh" -o -name "*.js" \) | sort | while read -r filepath; do
+		task=$(basename "$filepath" | sed -e 's/\.js$//' -e 's/\.sh$//')
+		log "- $task"
+	done
+}
+
+# If no arguments are passed, list the tasks and exit.
+if [[ $# -eq 0 ]]; then
+    list_tasks
+    exit 0
+fi
+
+# Arrays to store tasks and their associated flags.
+tasks=()
+flags_list=()
+
+# Current task and flags being processed.
+current_task=""
+current_flags=()
+
+# Parsing the command line arguments.
+for arg in "$@"; do
+	if [[ "$arg" == -* ]]; then
+		# If the argument starts with '-', it's a flag. Append it to current_flags.
+		# Only add flags if there's an active task (ensuring flags before the first task are ignored).
+		if [[ -n $current_task ]]; then
+			current_flags+=("$arg")
+		fi
+	else
+		# If there's a previous task, store it and its flags before starting a new one.
+		if [[ -n $current_task ]]; then
+			tasks+=("$current_task")
+			flags_list+=("${current_flags[*]}")
+			current_flags=()
+		fi
+		# Set the new current task.
+		current_task="$arg"
+	fi
+done
+
+# Storing the last task and its flags after the loop.
+if [[ -n $current_task ]]; then
+	tasks+=("$current_task")
+	flags_list+=("${current_flags[*]}")
+fi
+
+# Execute each task with its associated flags.
+for idx in "${!tasks[@]}"; do
+	task="${tasks[$idx]}"
+	# Convert flags from space-separated string to array.
+	IFS=' ' read -ra flags_for_task <<< "${flags_list[$idx]}"
+
+	JS_SCRIPT="$GU_DIR/$task.js"
+	SH_SCRIPT="$GU_DIR/$task.sh"
+
+	# Check for task script existence and type.
+	if [[ -f "$JS_SCRIPT" && -f "$SH_SCRIPT" ]]; then
+		error "Both .js and .sh tasks found for \"$task\"."
+		log "Please remove or rename one of them."
+		exit 1
+	elif [[ -f "$JS_SCRIPT" ]]; then
+		node "$JS_SCRIPT" "${flags_for_task[@]}"
+	elif [[ -f "$SH_SCRIPT" ]]; then
+		bash "$SH_SCRIPT" "${flags_for_task[@]}"
+	else
+		error "No task found with the name \"$task\"."
+		list_tasks
+		exit 1
+	fi
+done
