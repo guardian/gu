@@ -1,6 +1,6 @@
 # `gu`
 
-PoC of a Guardian task runner, in the style of our [ergonomic but unorthodox uses of `make`](https://github.com/guardian/dotcom-rendering/blob/dc76d6b6676222d23ade13ede7282bd506470679/dotcom-rendering/makefile).
+> PoC of a Guardian task runner, in the style of our [ergonomic but unorthodox uses of `make`](https://github.com/guardian/dotcom-rendering/blob/dc76d6b6676222d23ade13ede7282bd506470679/dotcom-rendering/makefile).
 
 The idea is to standardise how and where we define project tasks, and to
 make them:
