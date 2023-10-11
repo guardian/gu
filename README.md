@@ -43,6 +43,7 @@ Now you can run:
 
 ```sh
 gu build
+gu validate
 gu validate build
 ```
 
