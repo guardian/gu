@@ -59,56 +59,37 @@ if (args.length === 0) {
 	process.exit(0);
 }
 
-const input = {
-	guArgs: [],
-	tasks: [],
-};
+// parse args into tasks and guArgs
+const flags = [];
+const tasks = [];
 
 for (const arg of args) {
 	if (arg.startsWith("-")) {
-		if (input.tasks.length === 0) {
-			input.guArgs.push(arg);
+		if (tasks.length === 0) {
+			flags.push(arg);
 		} else {
-			input.tasks.at(-1).args.push(arg);
+			tasks.at(-1).args.push(arg);
 		}
 	} else {
-		input.tasks.push({
+		tasks.push({
 			name: arg,
 			args: [],
 		});
 	}
 }
 
-console.log(input);
+// run any local 'before' checks
+spawnSync(path.resolve(TASK_DIR, ".gu", "before"), flags, {
+	stdio: ["pipe", process.stdout, process.stderr],
+});
 
-for (const task of input.tasks) {
+// run each task synchronously
+for (const task of tasks) {
 	try {
-		const runningTask = spawnSync(
-			path.resolve(TASK_DIR, task.name),
-			task.args,
-			{
-				stdio: ["pipe", process.stdout, process.stderr],
-			}
-		);
+		spawnSync(path.resolve(TASK_DIR, task.name), task.args, {
+			stdio: ["pipe", process.stdout, process.stderr],
+		});
 	} catch (error) {
 		console.log(error);
 	}
 }
-// tasks.forEach((task, idx) => {
-// 	const flagsForTask = flagsList[idx];
-// 	const JS_SCRIPT = path.join(TASK_DIR, `${task}.js`)
-// 	const SH_SCRIPT = path.join(TASK_DIR, `${task}.sh`);
-// 	const EXECUTABLE = path.join(TASK_DIR, task);
-
-// 	if (fs.existsSync(JS_SCRIPT)) {
-// 		exec(`node "${JS_SCRIPT}" ${flagsForTask.join(" ")}`);
-// 	} else if (fs.existsSync(SH_SCRIPT)) {
-// 		exec(`bash "${SH_SCRIPT}" ${flagsForTask.join(" ")}`);
-// 	} else if (fs.existsSync(EXECUTABLE) && !path.extname(task)) {
-// 		exec(`"${EXECUTABLE}" ${flagsForTask.join(" ")}`);
-// 	} else {
-// 		error(`No task found with the name "${task}".`);
-// 		listTasks();
-// 		process.exit(1);
-// 	}
-// });
