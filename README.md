@@ -29,15 +29,15 @@ gu <task> [args...] [<task> [args...]...]
 
 ## Tasks
 
-Tasks can be any executable files, Node or bash scripts that live in the `./scripts` directory.
+Tasks are any executable files that live in the `./scripts` directory.
 
 #### Example
 
-```
+```sh
 .gu/
-├── build.sh
-├── lint
-└── test.js
+├── build #!/usr/bin/env node
+├── lint  #!/usr/bin/env ruby
+└── test  #!/bin/sh
 ```
 
 Now you can run:
@@ -64,8 +64,4 @@ gu lint -q -s test -w
 ```
 
 1. `lint` would receive `-q` and `-s` flags
-2. `test.js` would receive a `-w` flag
-
-## Why is it written in bash?
-
-Just to make it run as fast as possible without any dependencies.
+2. `test` would receive a `-w` flag

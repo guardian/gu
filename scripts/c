@@ -1,2 +1,3 @@
-#! /bin/sh
-echo "running 'c.sh' with $@"
+#!/bin/sh
+
+echo "running 'c' with $@ in bash"
