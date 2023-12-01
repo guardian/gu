@@ -3,7 +3,7 @@ import { format, logger } from './logger.ts';
 console.log(
 	'entity formatting:',
 	format.name('name'),
-	format.path('path'),
+	format.path('https://deno.land/std@0.208.0/path/mod.ts'),
 	format.cmd('cmd'),
 );
 

@@ -1,7 +1,7 @@
 import { type Task } from './getAllTasks.ts';
 import { getTasksFor } from './getTasksFor.ts';
 import { format, logger } from './lib/logger.ts';
-import { relative } from 'path';
+import { relative } from 'https://deno.land/std@0.208.0/path/mod.ts';
 
 let stop = false;
 

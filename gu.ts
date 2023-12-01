@@ -4,7 +4,7 @@
  * Entry file for the `gu` cli.
  */
 
-import { parseArgs } from 'flags';
+import { parseArgs } from 'https://deno.land/std@0.208.0/cli/parse_args.ts';
 import { getTasksFor } from './src/getTasksFor.ts';
 import { showHelp } from './src/messages/showHelp.ts';
 import { format, logger } from './src/lib/logger.ts';
