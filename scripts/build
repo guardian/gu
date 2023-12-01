@@ -4,6 +4,6 @@
 
 set -e
 
-deno compile -A --output "dist/gu" ./gu.ts
+deno compile --allow-read --allow-run --output "dist/gu" ./gu.ts
 # deno bundle ./gu.ts dist/gu.js
 # chmod +x dist/gu.js
