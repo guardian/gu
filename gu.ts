@@ -13,10 +13,6 @@ import { runTask } from './src/runTask.ts';
 import { checkNode } from './src/verify-node.ts';
 
 export async function runTasks(tasks: string[] = [], args: string[] = []) {
-	/**
-	 * No built in flags were passed, so now we look for tasks to run.
-	 */
-
 	const taskList = ['.gu/before-all', ...tasks, '.gu/after-all'];
 
 	// run the tasks

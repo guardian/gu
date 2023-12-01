@@ -65,7 +65,6 @@ export const runTask = async (
 				logger.error(`does not exist`, { aside: localPath });
 				Deno.exit(1);
 			}
-			console.log('wegfwefewfwefwe');
 		}
 		console.error(error);
 		Deno.exit(1);

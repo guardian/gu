@@ -1,7 +1,7 @@
 import { format, logger } from '../lib/logger.ts';
 
 const help = `is a task-runner that runs any scripts in ${
-	format.path('./scripts/')
+	format.path('./scripts')
 } with extra convenience.
 
 Usage: ${format.cmd('gu <task> [<task> ...] [-- args...]')}

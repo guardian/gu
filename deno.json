@@ -4,6 +4,6 @@
 		"singleQuote": true
 	},
 	"lint": {
-		"include": ["src/"]
+		"include": ["src/", "./gu.ts"]
 	}
 }
