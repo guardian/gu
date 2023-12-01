@@ -76,7 +76,6 @@ gu '**/test' # run all 'test' tasks in ./scripts/, including subdirectories
 gu '**/*'    # run all tasks in ./scripts
 ```
 
-````
 ### Helpers
 
 `gu` comes with some built in helpers that can be used in your tasks.
@@ -115,7 +114,7 @@ Tasks are any executable files that live in the `./scripts` directory.
 ├── build.mjs #!/usr/bin/env node
 ├── lint      #!/usr/bin/env ruby
 └── test      #!/usr/bin/env bash
-````
+```
 
 Now you can run:
 
