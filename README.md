@@ -3,6 +3,13 @@
 > Experimental task runner, inspired by the Guardian's
 > [ergonomic but unorthodox use of `makefile`s](https://github.com/search?q=org%3Aguardian%20.PHONY%3A&type=code).
 
+> [!NOTE]
+>
+> _This is still very much in development, although it should work…_
+>
+> _If you find a bug, please
+> [open an issue](https://github.com/guardian/gu/issues)._
+
 The idea is to standardise how and where you define project tasks, by making
 them:
 
@@ -20,6 +27,16 @@ simple to run in CI._
 ## Screenshot
 
 <img src="assets/screenshot.png" width="570" alt="screenshot of gu running" >
+
+## Installation
+
+> For now, you'll need to install `gu` using Deno. See
+> [deno.land](https://docs.deno.com/runtime/manual/getting_started/installation)
+> if you need to install Deno as well.
+
+```sh
+deno install --allow-read --allow-run https://deno.land/x/gu_cli/gu.ts
+```
 
 ## Usage
 
