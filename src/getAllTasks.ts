@@ -1,8 +1,7 @@
-import { walk } from 'https://deno.land/std@0.204.0/fs/mod.ts';
+import { walk } from 'fs';
 import { SCRIPTS_DIR } from './lib/paths.ts';
 import { isExecutable } from './isExecutable.ts';
-import { relative } from 'https://deno.land/std@0.204.0/path/mod.ts';
-import { extname } from 'https://deno.land/std@0.205.0/path/mod.ts';
+import { extname, relative } from 'path';
 
 export type Task = {
 	name: string;

@@ -8,7 +8,7 @@ import {
 	red,
 	underline,
 	yellow,
-} from 'https://deno.land/std@0.205.0/fmt/colors.ts';
+} from 'fmt';
 
 const prefix = '→';
 

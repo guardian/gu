@@ -4,7 +4,7 @@
  * Entry file for the `gu` cli.
  */
 
-import { parse } from 'https://deno.land/std@0.205.0/flags/mod.ts';
+import { parseArgs } from 'flags';
 import { getTasksFor } from './src/getTasksFor.ts';
 import { showHelp } from './src/messages/showHelp.ts';
 import { format, logger } from './src/lib/logger.ts';
@@ -38,7 +38,7 @@ export async function runTasks(tasks: string[] = [], args: string[] = []) {
 }
 
 if (import.meta.main) {
-	const args = parse(Deno.args, {
+	const args = parseArgs(Deno.args, {
 		boolean: ['help', 'version', 'list', 'verify-node'],
 		alias: { help: 'h', version: 'v', list: ['l'] },
 		'--': true,

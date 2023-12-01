@@ -1,4 +1,4 @@
-import { globToRegExp } from 'https://deno.land/std@0.208.0/path/glob_to_regexp.ts';
+import { globToRegExp } from 'path';
 import { getAllTasks } from './getAllTasks.ts';
 
 export const getTasksFor = async (name: string) =>
