@@ -71,10 +71,12 @@ gu test lint -- --cache
 Tasks can also be globs:
 
 ```sh
-gu 'build-*'
-gu '**/test'
+gu 'build-*' # run all tasks in ./scripts/ that start with "build-"
+gu '**/test' # run all 'test' tasks in ./scripts/, including subdirectories
+gu '**/*'    # run all tasks in ./scripts
 ```
 
+````
 ### Helpers
 
 `gu` comes with some built in helpers that can be used in your tasks.
@@ -104,8 +106,7 @@ Show the version number.
 Tasks are any executable files that live in the `./scripts` directory.
 
 > Note that file extensions are ignored by `gu`, so having both `lint.rb` and
-> `lint.mjs` would throw an error. However, using them can help with editor
-> integration.
+> `lint.mjs` would throw an error.
 
 ### Example
 
@@ -114,7 +115,7 @@ Tasks are any executable files that live in the `./scripts` directory.
 ├── build.mjs #!/usr/bin/env node
 ├── lint      #!/usr/bin/env ruby
 └── test      #!/usr/bin/env bash
-```
+````
 
 Now you can run:
 
@@ -135,7 +136,7 @@ For example, if you run `gu build`, it will try to run the following:
 4. `./scripts/.gu/after-build`
 5. `./scripts/.gu/after-all`
 
-You can use this feature to set up your environment before running a task, or to
+These can be useful to set up your environment before running a task, or to
 clean up afterwards etc.
 
 ## Development
