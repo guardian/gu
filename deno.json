@@ -1,0 +1,9 @@
+{
+	"fmt": {
+		"useTabs": true,
+		"singleQuote": true
+	},
+	"lint": {
+		"include": ["src/"]
+	}
+}

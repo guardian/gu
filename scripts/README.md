@@ -1,5 +1,7 @@
 # Scripts
 
-This directory contains scripts that are used to build and test the project.
+This directory contains a mix of real and example scripts that would be used to
+manage the project.
 
-JavaScript, bash scripts or executables can be run using `gu`, which can also list them for you.
+They are executable files, and can be run manually or by using `gu`, which can
+also list them for you.

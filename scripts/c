@@ -1,3 +1,0 @@
-#!/bin/sh
-
-echo "running 'c' with $@ in bash"
