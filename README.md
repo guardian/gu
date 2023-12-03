@@ -142,7 +142,13 @@ clean up afterwards etc.
 
 You will need Deno. See [deno.land](https://deno.land) for more information.
 
-While developing, instead of running `gu` you can run `./gu.ts` instead.
+While developing, you can install `gu` from disk by running:
+
+```sh
+deno install --allow-read --allow-run gu.ts
+```
+
+Now running `gu` will use your local copy.
 
 ### Building
 

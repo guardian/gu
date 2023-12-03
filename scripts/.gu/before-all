@@ -5,4 +5,4 @@
 # It uses gu's built-in --verify-node flag to ensure that we're using the
 # correct version of node.
 
-./gu.ts --verify-node
+gu --verify-node

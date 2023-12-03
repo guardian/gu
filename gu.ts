@@ -1,5 +1,3 @@
-#!/usr/bin/env deno run --allow-read --allow-run
-
 /**
  * Entry file for the `gu` cli.
  */
