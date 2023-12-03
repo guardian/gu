@@ -3,30 +3,34 @@
  */
 
 import { parseArgs } from 'https://deno.land/std@0.208.0/cli/parse_args.ts';
-import { getTasksFor } from './src/getTasksFor.ts';
+import { getScriptsForTask } from './src/getScriptsForTask.ts';
 import { showHelp } from './src/messages/showHelp.ts';
 import { format, logger } from './src/lib/logger.ts';
 import { listTasks } from './src/messages/listTasks.ts';
-import { runTask } from './src/runTask.ts';
+import { runScript } from './src/runScript.ts';
 import { checkNode } from './src/verify-node.ts';
 
-export async function runTasks(tasks: string[] = [], args: string[] = []) {
-	const taskList = ['.gu/before-all', ...tasks, '.gu/after-all'];
+export async function runTasks(userTasks: string[] = [], args: string[] = []) {
+	const tasksToRun = ['.gu/before-all', ...userTasks, '.gu/after-all'];
 
 	// run the tasks
-	for (const taskName of taskList) {
-		const tasksForArg = await getTasksFor(String(taskName));
-		const isArgTask = !String(taskName).startsWith('.gu/');
+	for (const taskToRun of tasksToRun) {
+		const isUserTask = !taskToRun.startsWith('.gu/');
 
-		if (isArgTask && tasksForArg.length === 0) {
-			logger.error(`no task for '${taskName}' found`);
+		const [task, ...taskArgs] = taskToRun.split(' ');
+		const scriptsForTask = await getScriptsForTask(task);
+
+		if (isUserTask && scriptsForTask.length === 0) {
+			logger.error(
+				`could not find anything in ./scripts that matches '${task}'`,
+			);
 			logger.log(`run ${format.cmd('gu --list')} to see this project's tasks`);
 			logger.log(`run ${format.cmd('gu --help')} for more information`);
 			Deno.exit(1);
 		}
 
-		for (const taskForArg of tasksForArg) {
-			await runTask(taskForArg, args);
+		for (const script of scriptsForTask) {
+			await runScript(script, [...taskArgs, ...args]);
 		}
 	}
 }

@@ -1,11 +1,11 @@
 import { type Task } from './getAllTasks.ts';
-import { getTasksFor } from './getTasksFor.ts';
+import { getScriptsForTask } from './getScriptsForTask.ts';
 import { format, logger } from './lib/logger.ts';
 import { relative } from 'https://deno.land/std@0.208.0/path/mod.ts';
 
 let stop = false;
 
-export const runTask = async (
+export const runScript = async (
 	task: Task,
 	args: string[],
 ) => {
@@ -25,12 +25,12 @@ export const runTask = async (
 		if (!isGuTask) {
 			console.log(format.rule(task.name));
 
-			const beforeTasks = await getTasksFor(
+			const beforeTasks = await getScriptsForTask(
 				'.gu/before-' + task.name,
 			);
 
 			for (const beforeTask of beforeTasks) {
-				await runTask(beforeTask, args);
+				await runScript(beforeTask, args);
 			}
 		}
 
@@ -50,12 +50,12 @@ export const runTask = async (
 		}
 
 		if (!isGuTask) {
-			const afterTasks = await getTasksFor(
+			const afterTasks = await getScriptsForTask(
 				'.gu/after-' + task.name,
 			);
 
 			for (const afterTask of afterTasks) {
-				await runTask(afterTask, args);
+				await runScript(afterTask, args);
 			}
 			logger.success(`done`, { aside: `${Date.now() - start}ms` });
 		}
