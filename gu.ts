@@ -15,7 +15,7 @@ import { runScript } from './src/runScript.ts';
 const history: string[] = [];
 
 export async function runScripts(inputs: string[] = [], flags: string[] = []) {
-	// Get any dependencies defined in a .gu.config.{t,j}s file
+	// Get any dependencies defined in a gu.config.{t,j}s file
 	const config = await getConfig();
 
 	// Try and run scripts referred to by the inputs
