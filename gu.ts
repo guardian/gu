@@ -4,7 +4,7 @@
 
 import { parseArgs } from 'https://deno.land/std@0.208.0/cli/parse_args.ts';
 import { globToRegExp } from 'https://deno.land/std@0.208.0/path/glob_to_regexp.ts';
-import { checkNode } from './helpers/check-node.ts';
+import { checkNode } from './src/helpers/check-node.ts';
 import { getScriptsForScriptName } from './src/getScriptsForScriptName.ts';
 import { type Dependency, getConfig } from './src/getConfig.ts';
 import { format, logger } from './src/lib/logger.ts';

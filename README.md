@@ -143,7 +143,7 @@ when running `gu --list` to describe them to users.
 
 ```ts
 // gu.config.ts
-import { type Config } from 'https://deno.land/x/gu_cli/src/getConfig.ts';
+import { type Config } from 'https://deno.land/x/gu_cli/mod.ts';
 
 export default {
 	'build': {
@@ -161,7 +161,7 @@ You can define dependencies between scripts, like in a `makefile`.
 
 ```ts
 // gu.config.ts
-import { type Config } from 'https://deno.land/x/gu_cli/src/getConfig.ts';
+import { type Config } from 'https://deno.land/x/gu_cli/mod.ts';
 
 export default {
 	'build': { dependencies: ['test'] },
@@ -175,7 +175,7 @@ Dependencies can also be TypeScript (or JavaScript) async functions:
 ```ts
 // gu.config.ts
 
-import { type Config } from 'https://deno.land/x/gu_cli/src/getConfig.ts';
+import { type Config } from 'https://deno.land/x/gu_cli/mod.ts';
 
 const cleanDist = async () => {};
 
@@ -215,8 +215,8 @@ Ensures the current Node version matches the one in your `.nvmrc`.
 ```ts
 // gu.config.ts
 
-import { type Config } from 'https://deno.land/x/gu_cli/src/getConfig.ts';
-import { checkNode } from 'https://deno.land/x/gu_cli/helpers/check-node.ts';
+import { type Config } from 'https://deno.land/x/gu_cli/mod.ts';
+import { checkNode } from 'https://deno.land/x/gu_cli/mod.ts';
 
 export default {
 	'*': { dependencies: [checkNode] },

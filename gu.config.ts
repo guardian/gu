@@ -6,8 +6,8 @@
  * It can be written in either TypeScript or JavaScript.
  */
 
-import { checkNode } from './helpers/check-node.ts';
-import { type Config } from './src/getConfig.ts';
+import { checkNode } from './mod.ts';
+import { type Config } from './mod.ts';
 
 const lintDependency = async () => {
 	console.log(
