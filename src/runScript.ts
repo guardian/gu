@@ -1,70 +1,45 @@
-import { type Task } from './getAllTasks.ts';
-import { getScriptsForTask } from './getScriptsForTask.ts';
-import { format, logger } from './lib/logger.ts';
-import { relative } from 'https://deno.land/std@0.208.0/path/mod.ts';
+import { type Script } from './getAllScripts.ts';
+import { logger } from './lib/logger.ts';
+import { relative } from 'https://deno.land/std@0.208.0/path/relative.ts';
 
 let stop = false;
 
 export const runScript = async (
-	task: Task,
+	script: Script,
 	args: string[],
 ) => {
-	const isGuTask = task.name.startsWith('.gu/');
-	const localPath = './' + relative(Deno.cwd(), task.path);
+	const localPath = './' + relative(Deno.cwd(), script.path);
 
 	if (stop) {
-		if (!isGuTask) {
-			logger.alert(`skipped`, { aside: task.name });
-		}
+		logger.alert(`skipped`, { aside: script.name });
 		return;
 	}
 
 	try {
 		const start = Date.now();
 
-		if (!isGuTask) {
-			console.log(format.rule(task.name));
-
-			const beforeTasks = await getScriptsForTask(
-				'.gu/before-' + task.name,
-			);
-
-			for (const beforeTask of beforeTasks) {
-				await runScript(beforeTask, args);
-			}
-		}
-
 		logger.info(`running`, { aside: localPath });
 
-		const status = await new Deno.Command(task.path, { args }).spawn().status;
+		const status = await new Deno.Command(script.path, {
+			args,
+			env: { GU_CHILD_PROCESS: 'true' },
+		}).spawn().status;
 
 		if (!status.success) {
 			if (status.signal === 'SIGINT') {
-				if (!isGuTask) {
-					logger.alert(`stopped`, { aside: localPath });
-				}
+				logger.alert(`stopped`, { aside: localPath });
+
 				return;
 			}
 			logger.error(`failed`, { aside: localPath });
 			Deno.exit(1);
 		}
 
-		if (!isGuTask) {
-			const afterTasks = await getScriptsForTask(
-				'.gu/after-' + task.name,
-			);
-
-			for (const afterTask of afterTasks) {
-				await runScript(afterTask, args);
-			}
-			logger.success(`done`, { aside: `${Date.now() - start}ms` });
-		}
+		logger.success(`done`, { aside: `${Date.now() - start}ms` });
 	} catch (error) {
 		if (error.name === 'NotFound') {
-			if (!isGuTask) {
-				logger.error(`does not exist`, { aside: localPath });
-				Deno.exit(1);
-			}
+			logger.error(`does not exist`, { aside: localPath });
+			Deno.exit(1);
 		}
 		console.error(error);
 		Deno.exit(1);
