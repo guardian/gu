@@ -31,7 +31,7 @@ some common tasks (e.g. checking the current Node version) – see below.
 
 ### Screenshot
 
-<!-- <img src="assets/screenshot.png" width="570" alt="screenshot of gu running" > -->
+<img src="assets/screenshot.png" width="681" alt="screenshot of gu running" >
 
 ### What can it run?
 

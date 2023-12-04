@@ -10,7 +10,9 @@ import { checkNode } from './helpers/check-node.ts';
 import { type Config } from './src/getConfig.ts';
 
 const lintDependency = async () => {
-	console.log('lint dependency');
+	console.log(
+		'I\'m a lint dependency doing something useful before `lint` runs...',
+	);
 };
 
 export default {
