@@ -1,8 +1,7 @@
 # `gu`
 
-> Experimental script runner, inspired by our ergonomic but
-> [unorthodox use of `makefile`s](https://github.com/search?q=org%3Aguardian%20.PHONY%3A&type=code)
-> and GitHub's
+> Experimental script runner, inspired by
+> [`make`](https://www.gnu.org/software/make/manual/make.html) and GitHub's
 > [Scripts To Rule Them All](https://github.com/github/scripts-to-rule-them-all).
 
 > [!NOTE]
