@@ -20,13 +20,21 @@ export default {
 	'*': {
 		dependencies: [checkNode],
 	},
+	build: {
+		description: 'Creates a cross-platform `gu` binary',
+	},
 	e2e: {
 		dependencies: [async () => {
 			console.log('e2e dependency');
 		}],
+		description: 'just a demo script',
 	},
 	lint: {
 		dependencies: [lintDependency],
+		description: 'Runs deno\'s linter',
+	},
+	long: {
+		description: 'A example of a long-running script',
 	},
 
 	// There is no `./scripts/validate` script, but you can still define dependencies.
@@ -34,5 +42,6 @@ export default {
 	// by defining dependencies in a config file.
 	validate: {
 		dependencies: ['e2e', 'lint', 'test'],
+		description: 'an example amalgamation of other scripts',
 	},
 } satisfies Config;
