@@ -1,4 +1,4 @@
-import { format, logger } from './lib/logger.ts';
+import { format, logger } from '../src/lib/logger.ts';
 import { findNvmrc } from './lib/findNvmrc.ts';
 
 const getVersionOf = async (command: string) => {
@@ -76,7 +76,7 @@ export const checkNode = async () => {
 						aside: targetVersion,
 						prompt: 'It should match the pattern: X.X.X.',
 					});
-					throw new Error();
+					throw new Error('GU_CHECK_FAILED');
 				}
 
 				if (currentVersion !== targetVersion) {

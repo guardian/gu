@@ -20,5 +20,3 @@ export const findNvmrc = async (startDir: string = Deno.cwd()) => {
 		currentDir = parentDir;
 	}
 };
-
-// console.log(await findNvmrc());

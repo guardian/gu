@@ -3,41 +3,100 @@
  */
 
 import { parseArgs } from 'https://deno.land/std@0.208.0/cli/parse_args.ts';
-import { getScriptsForTask } from './src/getScriptsForTask.ts';
-import { showHelp } from './src/messages/showHelp.ts';
+import { globToRegExp } from 'https://deno.land/std@0.208.0/path/glob_to_regexp.ts';
+import { checkNode } from './helpers/check-node.ts';
+import { getScriptsForScriptName } from './src/getScriptsForScriptName.ts';
+import { type Dependency, getConfig } from './src/getConfig.ts';
 import { format, logger } from './src/lib/logger.ts';
-import { listTasks } from './src/messages/listTasks.ts';
+import { listScripts } from './src/messages/listScripts.ts';
+import { showHelp } from './src/messages/showHelp.ts';
 import { runScript } from './src/runScript.ts';
-import { checkNode } from './src/verify-node.ts';
 
-export async function runTasks(userTasks: string[] = [], args: string[] = []) {
-	const tasksToRun = ['.gu/before-all', ...userTasks, '.gu/after-all'];
+const history: string[] = [];
 
-	// run the tasks
-	for (const taskToRun of tasksToRun) {
-		const isUserTask = !taskToRun.startsWith('.gu/');
+export async function runScripts(inputs: string[] = [], flags: string[] = []) {
+	// Get any dependencies defined in a .gu.config.{t,j}s file
+	const config = await getConfig();
 
-		const [task, ...taskArgs] = taskToRun.split(' ');
-		const scriptsForTask = await getScriptsForTask(task);
+	// Try and run scripts referred to by the inputs
+	for (const input of inputs) {
+		// inputs could be `lint` or `lint --fix` etc.
+		const [scriptName, ...scriptArgs] = input.split(' ');
 
-		if (isUserTask && scriptsForTask.length === 0) {
+		// get any dependencies for this input
+		const scriptDependencies: Dependency[] = [];
+
+		for (const [depName, opts] of Object.entries(config)) {
+			if (globToRegExp(depName).test(scriptName) && opts.dependencies) {
+				scriptDependencies.push(...opts.dependencies);
+			}
+		}
+
+		// get a list of scripts that match the input (it could be a glob)
+		const scriptsForScriptName = await getScriptsForScriptName(scriptName);
+
+		// if we couldn't find any scripts, and there are no dependencies, then
+		// we can't do anything
+		if (
+			scriptsForScriptName.length === 0 &&
+			scriptDependencies.length === 0
+		) {
 			logger.error(
-				`could not find anything in ./scripts that matches '${task}'`,
+				`could not find anything in ./scripts that matches '${scriptName}'`,
 			);
 			logger.log(`run ${format.cmd('gu --list')} to see this project's tasks`);
 			logger.log(`run ${format.cmd('gu --help')} for more information`);
 			Deno.exit(1);
 		}
 
-		for (const script of scriptsForTask) {
-			await runScript(script, [...taskArgs, ...args]);
+		// run any dependencies
+		for (const scriptDependency of scriptDependencies) {
+			switch (typeof scriptDependency) {
+				case 'string':
+					await runScripts([scriptDependency], flags);
+					break;
+				case 'function':
+					try {
+						const depName = scriptDependency.name ??
+							scriptDependency.toString();
+						if (history.includes(depName)) break;
+						await scriptDependency();
+						history.push(depName);
+					} catch (error) {
+						if (error.message === 'GU_CHECK_FAILED') {
+							logger.error(`failed`, {
+								aside:
+									`${scriptDependency.name} (dependency of '${scriptName}')`,
+							});
+						} else {
+							console.error(error);
+						}
+						Deno.exit(1);
+					}
+					break;
+				default:
+					logger.error(
+						`dependency is not a string or a function`,
+						{
+							aside: `'${scriptDependency}' is a ${typeof scriptDependency}`,
+						},
+					);
+					Deno.exit(1);
+			}
+		}
+
+		for (const script of scriptsForScriptName) {
+			if (history.includes(script.name)) continue;
+			console.log(format.rule(script.name));
+			await runScript(script, [...scriptArgs, ...flags]);
+			history.push(script.name);
 		}
 	}
 }
 
 if (import.meta.main) {
 	const args = parseArgs(Deno.args, {
-		boolean: ['help', 'version', 'list', 'verify-node'],
+		boolean: ['help', 'version', 'list', 'check-node'],
 		alias: { help: 'h', version: 'v', list: ['l'] },
 		'--': true,
 	});
@@ -57,7 +116,7 @@ if (import.meta.main) {
 		Deno.exit(0);
 	}
 
-	if (args['verify-node']) {
+	if (args['check-node']) {
 		try {
 			await checkNode();
 			Deno.exit(0);
@@ -70,14 +129,14 @@ if (import.meta.main) {
 	}
 
 	if (args.list) {
-		await listTasks();
+		await listScripts();
 		Deno.exit(0);
 	}
 
 	if (args._.length === 0) {
-		await listTasks();
+		await listScripts();
 		Deno.exit(1);
 	}
 
-	runTasks(args._.map((arg) => String(arg)), args['--']);
+	runScripts(args._.map((arg) => String(arg)), args['--']);
 }
