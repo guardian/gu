@@ -208,6 +208,20 @@ Now `gu build-foo` will run `./scripts/test`, call `beforeBuild` then run
 
 `gu` provides some helpers for common tasks in the config file.
 
+#### `exec`
+
+Runs a command in the current directory.
+
+```ts
+// gu.config.ts
+
+import { type Config, exec } from 'https://deno.land/x/gu_cli/mod.ts';
+
+export default {
+	'*': { dependencies: [exec('npm install')] },
+} satisfies Config;
+```
+
 #### `checkNode`
 
 Ensures the current Node version matches the one in your `.nvmrc`.
@@ -215,8 +229,7 @@ Ensures the current Node version matches the one in your `.nvmrc`.
 ```ts
 // gu.config.ts
 
-import { type Config } from 'https://deno.land/x/gu_cli/mod.ts';
-import { checkNode } from 'https://deno.land/x/gu_cli/mod.ts';
+import { checkNode, type Config } from 'https://deno.land/x/gu_cli/mod.ts';
 
 export default {
 	'*': { dependencies: [checkNode] },

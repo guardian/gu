@@ -51,7 +51,7 @@ export const getAllScripts = async () => {
 						SCRIPTS_DIR,
 						file.path.replace(extname(file.path), ''),
 					),
-					path: file.path,
+					path: './' + relative(Deno.cwd(), file.path),
 				});
 			}
 		}

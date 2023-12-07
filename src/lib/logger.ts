@@ -74,7 +74,7 @@ export const logger = {
 		if (aside) {
 			logMessage += ' ' + `(${aside})`;
 		}
-		console.log(dim(logMessage));
+		console.log(dim(prefix + ' ' + logMessage));
 	},
 };
 

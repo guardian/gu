@@ -26,9 +26,9 @@ export async function runScripts(inputs: string[] = [], flags: string[] = []) {
 		// get any dependencies for this input
 		const scriptDependencies: Dependency[] = [];
 
-		for (const [depName, opts] of Object.entries(config)) {
-			if (globToRegExp(depName).test(scriptName) && opts.dependencies) {
-				scriptDependencies.push(...opts.dependencies);
+		for (const [depName, { dependencies }] of Object.entries(config)) {
+			if (globToRegExp(depName).test(scriptName) && dependencies) {
+				scriptDependencies.push(...dependencies);
 			}
 		}
 
