@@ -15,7 +15,13 @@ let config: Config | undefined;
 
 export const getConfig = async () => {
 	if (!config) {
-		for await (const file of expandGlob(`gu.config.*`, { root: Deno.cwd() })) {
+		console.log(Deno.cwd());
+
+		for await (
+			const file of expandGlob(`./gu.config.*`, { root: Deno.cwd() })
+		) {
+			console.log(file.path);
+
 			config = (await import(file.path)).default;
 			break;
 		}
