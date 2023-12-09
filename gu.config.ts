@@ -6,7 +6,7 @@
  * It can be written in either TypeScript or JavaScript.
  */
 
-import { checkNode, installNodeModules } from './mod.ts';
+import { checkNode, exec } from './mod.ts';
 
 import { type Config } from './mod.ts';
 
@@ -18,8 +18,8 @@ const lintDependency = async () => {
 
 export default {
 	// applies to all scripts
-	'*': {
-		dependencies: [checkNode, installNodeModules],
+	'**/*': {
+		dependencies: [checkNode],
 	},
 	build: {
 		description: 'Creates a cross-platform `gu` binary',
@@ -43,6 +43,11 @@ export default {
 	// by defining phony scripts with dependencies in a config file.
 	validate: {
 		dependencies: ['e2e', 'lint', 'test'],
+		phony: true,
+	},
+	a: {
+		dependencies: [exec('echo "hi"')],
+		description: 'a script',
 		phony: true,
 	},
 } satisfies Config;

@@ -25,10 +25,13 @@ export async function runScripts(inputs: string[] = [], flags: string[] = []) {
 
 		// get any dependencies for this input
 		const scriptDependencies: Dependency[] = [];
-
-		if (config[scriptName]?.phony) {
-			for (const [depName, { dependencies }] of Object.entries(config)) {
-				if (globToRegExp(depName).test(scriptName) && dependencies) {
+		for (const [depName, { dependencies, phony }] of Object.entries(config)) {
+			if (dependencies) {
+				if (depName === scriptName) {
+					scriptDependencies.push(...dependencies);
+					break;
+				}
+				if (phony && globToRegExp(depName).test(scriptName)) {
 					scriptDependencies.push(...dependencies);
 				}
 			}
@@ -43,9 +46,9 @@ export async function runScripts(inputs: string[] = [], flags: string[] = []) {
 			scriptsForScriptName.length === 0 && scriptDependencies.length === 0
 		) {
 			logger.error(
-				`could not find anything in ./scripts that matches '${scriptName}'`,
+				`could not find anything that matches '${scriptName}'`,
 			);
-			logger.log(`run ${format.cmd('gu --list')} to see this project's tasks`);
+			logger.log(`run ${format.cmd('gu --list')} to see the available scripts`);
 			logger.log(`run ${format.cmd('gu --help')} for more information`);
 			Deno.exit(1);
 		}
@@ -135,7 +138,9 @@ if (import.meta.main) {
 	}
 
 	if (args._.length === 0) {
-		await listScripts();
+		logger.alert(`no tasks specified`);
+		logger.log(`run ${format.cmd('gu --list')} to see the available scripts`);
+		logger.log(`run ${format.cmd('gu --help')} for more information`);
 		Deno.exit(1);
 	}
 

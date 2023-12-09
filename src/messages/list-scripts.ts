@@ -8,7 +8,7 @@ export const listScripts = async () => {
 	const scripts = await getAllScripts();
 	const config = await getConfig();
 
-	const message = [''];
+	const message = [];
 
 	for (const script of scripts) {
 		let prompt = format.cmd('gu ' + getScriptNameFromPath(script.name));
@@ -19,7 +19,7 @@ export const listScripts = async () => {
 		message.push(prompt);
 	}
 
-	const phonies = [];
+	const phoniesMessage = [];
 
 	for (const [name, options] of Object.entries(config)) {
 		if (options.phony) {
@@ -29,23 +29,18 @@ export const listScripts = async () => {
 			if (description) {
 				prompt += ' ' + dim(blue(description.toLocaleLowerCase()));
 			}
-			phonies.push(prompt);
+			phoniesMessage.push(prompt);
 		}
 	}
 
-	if (phonies.length > 0) {
+	if (phoniesMessage.length > 0) {
 		message.push(
-			'',
-			dim('The following phony scripts are defined in ./gu.config.ts:'),
+			dim('plus the following phony scripts from ./gu.config.ts:'),
 		);
-		message.push(...phonies);
+		message.push(...phoniesMessage.sort());
 	}
 
-	message.push(
-		'',
-		'Run ' + format.cmd('gu --help') + ' for more information.',
-	);
-
-	logger.help('Available tasks');
 	console.log(message.join('\n'));
+
+	logger.log(`run ${format.cmd('gu --help')} for more information`);
 };
