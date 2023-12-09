@@ -31,7 +31,7 @@ export async function runScripts(inputs: string[] = [], flags: string[] = []) {
 					scriptDependencies.push(...dependencies);
 					break;
 				}
-				if (phony && globToRegExp(depName).test(scriptName)) {
+				if (phony || globToRegExp(depName).test(scriptName)) {
 					scriptDependencies.push(...dependencies);
 				}
 			}
