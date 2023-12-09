@@ -6,7 +6,8 @@
  * It can be written in either TypeScript or JavaScript.
  */
 
-import { checkNode } from './mod.ts';
+import { checkNode, installNodeModules } from './mod.ts';
+
 import { type Config } from './mod.ts';
 
 const lintDependency = async () => {
@@ -18,7 +19,7 @@ const lintDependency = async () => {
 export default {
 	// applies to all scripts
 	'*': {
-		dependencies: [checkNode],
+		dependencies: [checkNode, installNodeModules],
 	},
 	build: {
 		description: 'Creates a cross-platform `gu` binary',
@@ -37,11 +38,11 @@ export default {
 		description: 'A example of a long-running script',
 	},
 
-	// There is no `./scripts/validate` script, but you can still define dependencies.
+	// There is no `./scripts/validate` script, but you can define phony scripts.
 	// In theory, this means you can use `gu` without any scripts at all, just
-	// by defining dependencies in a config file.
+	// by defining phony scripts with dependencies in a config file.
 	validate: {
 		dependencies: ['e2e', 'lint', 'test'],
-		description: 'an example amalgamation of other scripts',
+		phony: true,
 	},
 } satisfies Config;

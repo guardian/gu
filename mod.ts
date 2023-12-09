@@ -1,9 +1,10 @@
-import { exec as _exec } from './src/lib/exec.ts';
+import { execAsGu } from './src/lib/exec-as-gu.ts';
 
-export { type Config, type Dependency } from './src/getConfig.ts';
-export { checkNode } from './src/helpers/check-node.ts';
+export { type Config, type Dependency } from './src/get-config.ts';
+export { checkNode } from './src/helpers/check-node/mod.ts';
+export { installNodeModules } from './src/helpers/install-node-modules/mod.ts';
 
 export const exec = (string: string) => async () => {
 	const [command, ...args] = string.split(' ');
-	return _exec(command, { args });
+	return execAsGu(command, { args });
 };

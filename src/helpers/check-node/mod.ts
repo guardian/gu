@@ -1,5 +1,5 @@
-import { format, logger } from '../lib/logger.ts';
-import { findNvmrc } from './lib/findNvmrc.ts';
+import { format, logger } from '../../lib/logger.ts';
+import { findNvmrc } from './find-nvmrc.ts';
 
 const getVersionOf = async (command: string) => {
 	try {

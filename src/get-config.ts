@@ -4,6 +4,11 @@ export type Dependency = string | (() => void) | (() => Promise<void>);
 export type Config = Record<string, {
 	dependencies?: Dependency[];
 	description?: string;
+	/**
+	 * A phony script does not have a corresponding file in `./scripts`,
+	 * but can still be run by `gu`.
+	 */
+	phony?: boolean;
 }>;
 
 let config: Config | undefined;

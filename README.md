@@ -53,18 +53,22 @@ Now you can run:
 gu lint test build
 ```
 
-> Note that file extensions are ignored by `gu`, so having both `lint.rb` and
-> `lint.mjs` would throw an error.
+> File extensions are ignored by `gu`, so having both `lint.rb` and `lint.mjs`
+> would throw an error.
 
 ## Installation
 
-> For now, you'll need to install `gu` using Deno. See
-> [deno.land](https://docs.deno.com/runtime/manual/getting_started/installation)
-> if you need to install Deno as well.
+Install `gu` using Deno.
 
 ```sh
-deno install --allow-read --allow-run https://deno.land/x/gu_cli/gu.ts
+deno install --allow-read --allow-write --allow-net --allow-run --unstable https://deno.land/x/gu_cli/gu.ts
 ```
+
+> [!INFO]
+>
+> _See
+> [deno.land](https://docs.deno.com/runtime/manual/getting_started/installation)
+> if you need to install Deno as well..._
 
 ## Usage
 
@@ -86,8 +90,10 @@ You can run multiple scripts:
 gu test lint
 ```
 
-> [!NOTE] Like `make` (which inspired it), `gu` will only run a script once. So
-> running `gu test lint test` is no different to running `gu test lint`.
+> [!INFO]
+>
+> Like `make` (which inspired it), `gu` will only run a script once. So running
+> `gu test lint test` is no different to running `gu test lint`.
 
 You can pass arguments to individual scripts by quoting them:
 
@@ -101,17 +107,17 @@ Or you can pass arguments to all scripts by passing them after `--`:
 gu test lint -- --cache
 ```
 
-You can also provide globs:
+You can also provide [globs](https://globster.xyz/):
 
 ```sh
-# run all scripts in ./scripts/ that start with "build-"
+# run all scripts in the top level of ./scripts/
+gu '*'
+
+# run all scripts in the top level of ./scripts/ that start with "build-"
 gu 'build-*'
 
-# run all 'test' scripts in ./scripts/, including subdirectories
+# run all 'test' scripts in ./scripts/ (at any depth)
 gu '**/test'
-
-# run all scripts in ./scripts/
-gu '*'
 ```
 
 ### Flags
@@ -131,13 +137,89 @@ Show the version number.
 ## Configuration
 
 You can optionally define a `gu.config.ts` file in the root of your project.
-This allows you to enhance the behaviour of the raw scripts while working with
-them.
+This allows you to enhance the behaviour of the raw scripts when run with `gu`.
 
-### Descriptions
+#### Example
 
-You can define descriptions for scripts in the config file. This will be used
-when running `gu --list` to describe them to users.
+```ts
+// gu.config.ts
+
+import { type Config } from 'https://deno.land/x/gu_cli/mod.ts';
+
+export default {
+	// enhances ./scripts/my-script
+	'my-script': {
+		// options
+	},
+} satisfies Config;
+```
+
+As with the CLI, keys can be [globs](https://globster.xyz/):
+
+```ts
+// gu.config.ts
+export default {
+	// applies to all scripts in the top level of ./scripts/
+	'*': {},
+
+	// applies to all scripts in ./scripts/ (at any depth)
+	'**/*': {},
+
+	// applies to all scripts in ./scripts/ that start with "build-" (at any depth)
+	'**/build-*': {},
+} satisfies Config;
+```
+
+### `options.dependencies`
+
+Declares the dependency of a script on other scripts (like in a `makefile`).
+
+#### Example
+
+```ts
+// gu.config.ts
+
+import { type Config } from 'https://deno.land/x/gu_cli/mod.ts';
+
+export default {
+	'build': { dependencies: ['test'] },
+} satisfies Config;
+```
+
+Now running `gu build` will run `./scripts/test` before running
+`./scripts/build`.
+
+---
+
+Dependencies can also be async TypeScript functions. Because `gu` is built with
+Deno, you can use any of the [Deno runtime APIs](https://deno.land/api).
+
+```ts
+// gu.config.ts
+
+import { type Config } from 'https://deno.land/x/gu_cli/mod.ts';
+
+const cleanDist = async () => {
+	await Deno.remove('./dist', { recursive: true });
+};
+
+export default {
+	'build': { dependencies: [cleanDist, 'test'] },
+} satisfies Config;
+```
+
+Now running `gu build` will call `cleanDist` and then run `./scripts/test`
+before running `./scripts/build`.
+
+> [!INFO]
+>
+> As with the CLI (and `make`), `gu` will only run a dependency once. So, given
+> the example above, if you ran `gu test build` it will still only run `test`
+> once.
+
+### `options.description`
+
+Used when running `gu --list` to describe them to users.
 
 #### Example
 
@@ -148,79 +230,43 @@ import { type Config } from 'https://deno.land/x/gu_cli/mod.ts';
 export default {
 	'build': {
 		// describes `./scripts/build`
-		description: 'Builds the project and the internal libraries it depends on.',
+		description: 'Builds the project, including dependencies',
 	},
 } satisfies Config;
 ```
 
-### Dependencies
+### `options.phony`
 
-You can define dependencies between scripts, like in a `makefile`.
+Creates a "phony" script from a config, which does not refer to a file in
+`./scripts/`.
+
+This allows you to compose scripts for common development tasks.
 
 #### Example
 
 ```ts
 // gu.config.ts
-import { type Config } from 'https://deno.land/x/gu_cli/mod.ts';
-
-export default {
-	'build': { dependencies: ['test'] },
-} satisfies Config;
-```
-
-Now `gu build` will run `./scripts/test` then `./scripts/build`.
-
-Dependencies can also be TypeScript (or JavaScript) async functions:
-
-```ts
-// gu.config.ts
 
 import { type Config } from 'https://deno.land/x/gu_cli/mod.ts';
 
-const cleanDist = async () => {};
-
 export default {
-	'build': { dependencies: [cleanDist] },
+	'validate': {
+		phony: ['test', 'lint'],
+	},
 } satisfies Config;
 ```
 
-Now `gu build` will call `cleanDist` then run `./scripts/build`.
+Now running `gu validate` will run `./scripts/test` and `./scripts/lint`.
 
-Keys in the config file are the names of scripts, and like the CLI, they can be
-globs:
-
-```ts
-// gu.config.ts
-export default {
-	'*': { dependencies: ['test'] },
-	'build-*': { dependencies: [beforeBuild] },
-} satisfies Config;
-```
-
-Now `gu build-foo` will run `./scripts/test`, call `beforeBuild` then run
-`./scripts/build-foo`.
-
-> [!NOTE] As with the CLI (and `make`), `gu` will only run a dependency once.
-> So, given the example above, running `gu test build` will still only `test`
-> run once.
+> [!INFO]
+>
+> In theory, you could _only_ have phony scripts in a `gu.config.ts` and not
+> make use of `./scripts` at all. Remember that only users of `gu` will be able
+> to run these, though.
 
 ### Helpers
 
 `gu` provides some helpers for common tasks in the config file.
-
-#### `exec`
-
-Runs a command in the current directory.
-
-```ts
-// gu.config.ts
-
-import { type Config, exec } from 'https://deno.land/x/gu_cli/mod.ts';
-
-export default {
-	'*': { dependencies: [exec('npm install')] },
-} satisfies Config;
-```
 
 #### `checkNode`
 
@@ -236,7 +282,37 @@ export default {
 } satisfies Config;
 ```
 
-_More helpers to come..._
+#### `installNodeModules`
+
+(Re)installs `node_modules` if they are out of date, using the correct package
+manager.
+
+```ts
+// gu.config.ts
+
+import {
+	type Config,
+	installNodeModules,
+} from 'https://deno.land/x/gu_cli/mod.ts';
+
+export default {
+	'*': { dependencies: [installNodeModules] },
+} satisfies Config;
+```
+
+#### `exec`
+
+Runs a command in the current directory.
+
+```ts
+// gu.config.ts
+
+import { type Config, exec } from 'https://deno.land/x/gu_cli/mod.ts';
+
+export default {
+	'*': { dependencies: [exec('rm -rf **/dist')] },
+} satisfies Config;
+```
 
 ## Why would I want this?
 
@@ -315,7 +391,7 @@ You will need Deno. See [deno.land](https://deno.land) for more information.
 While developing, you can install `gu` from disk by running:
 
 ```sh
-deno install --allow-read --allow-run gu.ts
+deno install --allow-read --allow-write --allow-net --allow-run --unstable gu.ts
 ```
 
-Now running `gu` will use your local copy.
+Now when you run `gu`, it will use your local copy.

@@ -1,5 +1,5 @@
-import { type Script } from './getAllScripts.ts';
-import { exec } from './lib/exec.ts';
+import { type Script } from './get-all-scripts.ts';
+import { execAsGu } from './lib/exec-as-gu.ts';
 import { logger } from './lib/logger.ts';
 
 let stop = false;
@@ -13,7 +13,7 @@ export const runScript = async (
 		return;
 	}
 
-	await exec(script.path, {
+	await execAsGu(script.path, {
 		args,
 		env: { GU_CHILD_PROCESS: 'true' },
 	});

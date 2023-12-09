@@ -4,13 +4,13 @@
 
 import { parseArgs } from 'https://deno.land/std@0.208.0/cli/parse_args.ts';
 import { globToRegExp } from 'https://deno.land/std@0.208.0/path/glob_to_regexp.ts';
-import { checkNode } from './src/helpers/check-node.ts';
-import { getScriptsForScriptName } from './src/getScriptsForScriptName.ts';
-import { type Dependency, getConfig } from './src/getConfig.ts';
+import { checkNode } from './src/helpers/check-node/mod.ts';
+import { getScriptsForScriptName } from './src/get-scripts-for-script-name.ts';
+import { type Dependency, getConfig } from './src/get-config.ts';
 import { format, logger } from './src/lib/logger.ts';
-import { listScripts } from './src/messages/listScripts.ts';
-import { showHelp } from './src/messages/showHelp.ts';
-import { runScript } from './src/runScript.ts';
+import { listScripts } from './src/messages/list-scripts.ts';
+import { showHelp } from './src/messages/show-help.ts';
+import { runScript } from './src/run-script.ts';
 
 const history: string[] = [];
 
@@ -26,9 +26,11 @@ export async function runScripts(inputs: string[] = [], flags: string[] = []) {
 		// get any dependencies for this input
 		const scriptDependencies: Dependency[] = [];
 
-		for (const [depName, { dependencies }] of Object.entries(config)) {
-			if (globToRegExp(depName).test(scriptName) && dependencies) {
-				scriptDependencies.push(...dependencies);
+		if (config[scriptName]?.phony) {
+			for (const [depName, { dependencies }] of Object.entries(config)) {
+				if (globToRegExp(depName).test(scriptName) && dependencies) {
+					scriptDependencies.push(...dependencies);
+				}
 			}
 		}
 
@@ -38,8 +40,7 @@ export async function runScripts(inputs: string[] = [], flags: string[] = []) {
 		// if we couldn't find any scripts, and there are no dependencies, then
 		// we can't do anything
 		if (
-			scriptsForScriptName.length === 0 &&
-			scriptDependencies.length === 0
+			scriptsForScriptName.length === 0 && scriptDependencies.length === 0
 		) {
 			logger.error(
 				`could not find anything in ./scripts that matches '${scriptName}'`,

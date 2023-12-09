@@ -1,6 +1,6 @@
 import { logger } from './logger.ts';
 
-export const exec = async (
+export const execAsGu = async (
 	command: string | URL,
 	options?: Deno.CommandOptions,
 ) => {
